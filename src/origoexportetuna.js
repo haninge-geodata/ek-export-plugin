@@ -20,19 +20,31 @@ const Origoexportetuna = function Origoexportetuna(options = {}) {
 
   function listenerFunc() {
     const buttonContainer = document.getElementsByClassName('export-buttons-container')[0];
+    const correctLayer = selectionManager.getSelectedItemsForASelectionGroup(layer).length > 0;
+    const layerTitle = viewer.getLayer(layer).get('title');
 
     if (typeof buttonContainer !== 'undefined') {
       const buttonNeedsToBeAdded = document.getElementById('callDotNet') === null;
       const hasOrigoExportButton = buttonContainer.getElementsByTagName('div').length === 1;
+      const groupElement = document.getElementsByClassName('selectedurvalelement');
 
-      if (hasOrigoExportButton) {
-        buttonContainer.getElementsByTagName('div')[0].style.display = 'inline-block';
-      }
+      if (groupElement && groupElement.length > 0 && !groupElement[0].classList.contains('hidden')) {
+        const selectedGroup = groupElement[0].textContent.trim();
+        const selectedGroupTitle = selectedGroup.substring(0, selectedGroup.length - 3).trim();
 
-      if (buttonNeedsToBeAdded) {
-        const button = dom.html(`<button id="callDotNet" class="export-button" style="margin-left: 0.5rem;">${buttonText}</button>`);
-        buttonContainer.appendChild(button);
-        document.getElementById('callDotNet').addEventListener('click', () => window.open(dotNetUrlBuilder(selectionManager.getSelectedItemsForASelectionGroup(layer)), '_blank'));
+        if (selectedGroupTitle === layerTitle) {
+          if (hasOrigoExportButton) {
+            buttonContainer.getElementsByTagName('div')[0].style.display = 'inline-block';
+          }
+
+          if (buttonNeedsToBeAdded && correctLayer) {
+            const button = dom.html(`<button id="callDotNet" class="export-button" style="margin-left: 0.5rem;">${buttonText}</button>`);
+            buttonContainer.appendChild(button);
+            document.getElementById('callDotNet').addEventListener('click', () => window.open(dotNetUrlBuilder(selectionManager.getSelectedItemsForASelectionGroup(layer)), '_blank'));
+          }
+        }
+      } else if (!buttonNeedsToBeAdded) {
+        document.getElementById('callDotNet').remove();
       }
     }
   }
@@ -48,7 +60,9 @@ const Origoexportetuna = function Origoexportetuna(options = {}) {
           const el = document.getElementsByClassName('listcontainer')[0];
           if (el && el.offsetParent !== null) {
             listenerFunc();
-            document.getElementsByClassName('urvalelement')[0].addEventListener('click', listenerFunc);
+            document.getElementsByClassName('urvalelement').forEach(element => element.addEventListener('click', () => {
+              listenerFunc();
+            }));
           }
         });
 
