@@ -29,8 +29,7 @@ const Origoexportetuna = function Origoexportetuna(options = {}) {
       const groupElement = document.getElementsByClassName('selectedurvalelement');
 
       if (groupElement && groupElement.length > 0 && !groupElement[0].classList.contains('hidden')) {
-        const selectedGroup = groupElement[0].textContent.trim();
-        const selectedGroupTitle = selectedGroup.substring(0, selectedGroup.length - 3).trim();
+        const selectedGroupTitle = groupElement[0].textContent.replace(/\s*\(.*?\)\s*/g, '');
 
         if (selectedGroupTitle === layerTitle) {
           if (hasOrigoExportButton) {
@@ -56,13 +55,16 @@ const Origoexportetuna = function Origoexportetuna(options = {}) {
         viewer = evt.target;
         selectionManager = viewer.getSelectionManager();
 
+        const el = document.getElementsByClassName('listcontainer')[0];
         const observer = new MutationObserver(() => {
-          const el = document.getElementsByClassName('listcontainer')[0];
           if (el && el.offsetParent !== null) {
             listenerFunc();
-            document.getElementsByClassName('urvalelement').forEach(element => element.addEventListener('click', () => {
-              listenerFunc();
-            }));
+            document.getElementsByClassName('urvalelement').forEach((element) => {
+              if (!element.getAttribute('hasListener')) {
+                element.setAttribute('hasListener', true);
+                element.addEventListener('click', () => listenerFunc());
+              }
+            });
           }
         });
 
