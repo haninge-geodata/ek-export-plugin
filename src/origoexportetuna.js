@@ -3,6 +3,12 @@ import Origo from 'Origo';
 const Origoexportetuna = function Origoexportetuna(options = {}) {
   let viewer;
   let selectionManager;
+  let modal;
+  let callDotNetButton;
+  let acceptTermsButton;
+  let termsText;
+  let modalContent;
+  let acceptedTerms = false;
   const dom = Origo.ui.dom;
 
   const layer = Object.prototype.hasOwnProperty.call(options, 'layer') ? options.layer : null;
@@ -18,19 +24,36 @@ const Origoexportetuna = function Origoexportetuna(options = {}) {
     return `${hostname}/search/estateExcelReport.aspx?searchstring=&estateLayer=${layer}&ids=${idString}&functionParam=excel`;
   }
 
+  function modalLogic() {
+    if (acceptedTerms) {
+      window.open(dotNetUrlBuilder(selectionManager.getSelectedItemsForASelectionGroup(layer)), '_blank');
+    } else {
+      modal = Origo.ui.Modal({
+        title: 'Varning',
+        content: modalContent.render(),
+        style: 'width: auto;',
+        target: viewer.getId()
+      });
+
+      document.getElementById(acceptTermsButton.getId()).addEventListener('click', () => {
+        acceptedTerms = true;
+        modal.closeModal();
+      });
+    }
+  }
+
   function listenerFunc() {
     const buttonContainer = document.getElementsByClassName('export-buttons-container')[0];
     const correctLayer = selectionManager.getSelectedItemsForASelectionGroup(layer).length > 0;
     const layerTitle = viewer.getLayer(layer).get('title');
 
     if (typeof buttonContainer !== 'undefined') {
-      const buttonNeedsToBeAdded = document.getElementById('callDotNet') === null;
+      const buttonNeedsToBeAdded = document.getElementById(callDotNetButton.getId()) === null;
       const hasOrigoExportButton = buttonContainer.getElementsByTagName('div').length === 1;
       const groupElement = document.getElementsByClassName('selectedurvalelement');
 
       if (groupElement && groupElement.length > 0 && !groupElement[0].classList.contains('hidden')) {
-        const selectedGroup = groupElement[0].textContent.trim();
-        const selectedGroupTitle = selectedGroup.substring(0, selectedGroup.length - 3).trim();
+        const selectedGroupTitle = groupElement[0].textContent.replace(/\s*\(.*?\)\s*/g, '');
 
         if (selectedGroupTitle === layerTitle) {
           if (hasOrigoExportButton) {
@@ -38,31 +61,55 @@ const Origoexportetuna = function Origoexportetuna(options = {}) {
           }
 
           if (buttonNeedsToBeAdded && correctLayer) {
-            const button = dom.html(`<button id="callDotNet" class="export-button" style="margin-left: 0.5rem;">${buttonText}</button>`);
-            buttonContainer.appendChild(button);
-            document.getElementById('callDotNet').addEventListener('click', () => window.open(dotNetUrlBuilder(selectionManager.getSelectedItemsForASelectionGroup(layer)), '_blank'));
+            buttonContainer.appendChild(dom.html(callDotNetButton.render()));
+            document.getElementById(callDotNetButton.getId()).addEventListener('click', () => modalLogic());
           }
         }
       } else if (!buttonNeedsToBeAdded) {
-        document.getElementById('callDotNet').remove();
+        document.getElementById(callDotNetButton.getId()).remove();
       }
     }
   }
 
   return Origo.ui.Component({
     name: 'origoexportetuna',
+    onInit() {
+      callDotNetButton = Origo.ui.Button({
+        text: buttonText,
+        cls: 'export-button',
+        style: 'margin-left: 0.5rem;'
+      });
+
+      acceptTermsButton = Origo.ui.Button({
+        text: 'Jag förstår',
+        cls: 'light rounded border text-smaller o-tooltip margin-top',
+        style: 'display: block; background-color: #ebebeb; padding: 0.4rem; margin-left: auto; margin-right: auto;'
+      });
+
+      termsText = Origo.ui.Element({
+        tagName: 'p',
+        innerHTML: 'Informationen du är på väg att hämta är känslig och får inte delas med utomstående.'
+      });
+
+      modalContent = Origo.ui.Element({
+        components: [termsText, acceptTermsButton]
+      });
+    },
     onAdd(evt) {
       if (layer && hostname && attribute && buttonText) {
         viewer = evt.target;
         selectionManager = viewer.getSelectionManager();
 
+        const el = document.getElementsByClassName('listcontainer')[0];
         const observer = new MutationObserver(() => {
-          const el = document.getElementsByClassName('listcontainer')[0];
           if (el && el.offsetParent !== null) {
             listenerFunc();
-            document.getElementsByClassName('urvalelement').forEach(element => element.addEventListener('click', () => {
-              listenerFunc();
-            }));
+            document.getElementsByClassName('urvalelement').forEach((element) => {
+              if (!element.getAttribute('hasListener')) {
+                element.setAttribute('hasListener', true);
+                element.addEventListener('click', () => listenerFunc());
+              }
+            });
           }
         });
 
