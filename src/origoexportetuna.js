@@ -15,6 +15,9 @@ const Origoexportetuna = function Origoexportetuna(options = {}) {
   const hostname = Object.prototype.hasOwnProperty.call(options, 'hostname') ? options.hostname : null;
   const attribute = Object.prototype.hasOwnProperty.call(options, 'attribute') ? options.attribute : null;
   const buttonText = Object.prototype.hasOwnProperty.call(options, 'buttonText') ? options.buttonText : null;
+  const modalTitle = Object.prototype.hasOwnProperty.call(options, 'modalTitle') ? options.modalTitle : 'Varning';
+  const modalContentText = Object.prototype.hasOwnProperty.call(options, 'modalContentText') ? options.modalContentText : 'Informationen du är på väg att hämta är känslig och får inte delas med utomstående.';
+  const modalButtonText = Object.prototype.hasOwnProperty.call(options, 'modalButtonText') ? options.modalButtonText : 'Jag förstår';
 
   function dotNetUrlBuilder(items) {
     let idString = '';
@@ -29,7 +32,7 @@ const Origoexportetuna = function Origoexportetuna(options = {}) {
       window.open(dotNetUrlBuilder(selectionManager.getSelectedItemsForASelectionGroup(layer)), '_blank');
     } else {
       modal = Origo.ui.Modal({
-        title: 'Varning',
+        title: `${modalTitle}`,
         content: modalContent.render(),
         style: 'width: auto;',
         target: viewer.getId()
@@ -81,14 +84,14 @@ const Origoexportetuna = function Origoexportetuna(options = {}) {
       });
 
       acceptTermsButton = Origo.ui.Button({
-        text: 'Jag förstår',
+        text: `${modalButtonText}`,
         cls: 'light rounded border text-smaller o-tooltip margin-top',
         style: 'display: block; background-color: #ebebeb; padding: 0.4rem; margin-left: auto; margin-right: auto;'
       });
 
       termsText = Origo.ui.Element({
         tagName: 'p',
-        innerHTML: 'Informationen du är på väg att hämta är känslig och får inte delas med utomstående.'
+        innerHTML: `${modalContentText}`
       });
 
       modalContent = Origo.ui.Element({
