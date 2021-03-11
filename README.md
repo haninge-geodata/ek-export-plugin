@@ -7,6 +7,9 @@ Knapp som skickar anrop till Eskilstunas .NET projekt för fastighetsrapporter.
 - hostname: URL till önskad host som kör tjänsten för .NET projektet. Ta inte med backslash i slutet av URL:en.
 - attribute: Det attribut för id/fnr som ska skickas med i anropet.
 - buttonText: Knappens text.
+- modalTitle: Titel på popup-fönster.
+- modalContentText: Text som visas i popup-fönster.
+- modalButtonText: Knappens text i popup-fönster.
 
 **Exempel:**
 ```HTML
