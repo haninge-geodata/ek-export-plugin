@@ -1,4 +1,4 @@
-# origo-export-etuna
+# ek-export-plugin
 
 Knapp som skickar anrop till Eskilstunas .NET projekt för fastighetsrapporter.
 
@@ -18,7 +18,7 @@ Knapp som skickar anrop till Eskilstunas .NET projekt för fastighetsrapporter.
     origo.on('load', function (viewer) {
       var origoexportetuna = Origoexportetuna({
         layer: "sokvyx_djupdata_djuppunkter_vy",
-        hostname: "https://ikarta.eskilstuna.se",
+        hostname: "https://kartakarta.karta",
         attribute: "fnr",
         buttonText: "Hämta excel"
       });
