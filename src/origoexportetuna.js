@@ -11,7 +11,7 @@ const Origoexportetuna = function Origoexportetuna(options = {}) {
   let acceptedTerms = false;
   const dom = Origo.ui.dom;
 
-  const layer = Object.prototype.hasOwnProperty.call(options, 'layer') ? options.layer : null;
+  const layerName = Object.prototype.hasOwnProperty.call(options, 'layer') ? options.layer : null;
   const hostname = Object.prototype.hasOwnProperty.call(options, 'hostname') ? options.hostname : null;
   const attribute = Object.prototype.hasOwnProperty.call(options, 'attribute') ? options.attribute : null;
   const buttonText = Object.prototype.hasOwnProperty.call(options, 'buttonText') ? options.buttonText : null;
@@ -24,12 +24,12 @@ const Origoexportetuna = function Origoexportetuna(options = {}) {
     items.forEach((item) => {
       idString += `${item.getFeature().get(attribute)};`;
     });
-    return `${hostname}/search/estateExcelReport.aspx?searchstring=&estateLayer=${layer}&ids=${idString}&functionParam=excel`;
+    return `${hostname}/search/estateExcelReport.aspx?searchstring=&estateLayer=${layerName}&ids=${idString}&functionParam=excel`;
   }
 
   function modalLogic() {
     if (acceptedTerms) {
-      window.open(dotNetUrlBuilder(selectionManager.getSelectedItemsForASelectionGroup(layer)), '_blank');
+      window.open(dotNetUrlBuilder(selectionManager.getSelectedItemsForASelectionGroup(layerName)), '_blank');
     } else {
       modal = Origo.ui.Modal({
         title: `${modalTitle}`,
@@ -47,8 +47,8 @@ const Origoexportetuna = function Origoexportetuna(options = {}) {
 
   function listenerFunc() {
     const buttonContainer = document.getElementsByClassName('export-buttons-container')[0];
-    const correctLayer = selectionManager.getSelectedItemsForASelectionGroup(layer).length > 0;
-    const layerTitle = viewer.getLayer(layer).get('title');
+    const correctLayer = selectionManager.getSelectedItemsForASelectionGroup(layerName).length > 0;
+    const layerTitle = viewer.getLayer(layerName).get('title');
 
     if (typeof buttonContainer !== 'undefined') {
       const buttonNeedsToBeAdded = document.getElementById(callDotNetButton.getId()) === null;
@@ -99,8 +99,10 @@ const Origoexportetuna = function Origoexportetuna(options = {}) {
       });
     },
     onAdd(evt) {
-      if (layer && hostname && attribute && buttonText) {
-        viewer = evt.target;
+      viewer = evt.target;
+      const layerExists = viewer.getLayers().filter(layer => layer.get('name') === layerName).length > 0;
+
+      if (layerExists && layerName && hostname && attribute && buttonText) {
         selectionManager = viewer.getSelectionManager();
 
         const el = document.getElementsByClassName('listcontainer')[0];
@@ -118,7 +120,7 @@ const Origoexportetuna = function Origoexportetuna(options = {}) {
 
         observer.observe(document.querySelector('#sidebarcontainer'), { attributes: true, childList: true, characterData: true });
       } else {
-        alert('Kunde inte ladda plugin Origoexportetuna.\nParametrar saknas.');
+        console.log(`Kunde inte ladda plugin Origoexportetuna. ${layerExists ? 'Parametrar saknas.' : 'Lagret finns inte i vyn.'}`);
       }
     }
   });
