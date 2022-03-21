@@ -109,7 +109,7 @@ const Origoexportetuna = function Origoexportetuna(options = {}) {
         const observer = new MutationObserver(() => {
           if (el && el.offsetParent !== null) {
             listenerFunc();
-            document.getElementsByClassName('urvalelement').forEach((element) => {
+            Array.from(document.getElementsByClassName('urvalelement')).forEach((element) => {
               if (!element.getAttribute('hasListener')) {
                 element.setAttribute('hasListener', true);
                 element.addEventListener('click', () => listenerFunc());
