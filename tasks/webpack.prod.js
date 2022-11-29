@@ -1,6 +1,5 @@
 const webpack = require('webpack');
-const merge = require('webpack-merge');
-const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
+const { merge } = require('webpack-merge');
 const common = require('./webpack.common.js');
 
 module.exports = merge(common, {
@@ -12,7 +11,7 @@ module.exports = merge(common, {
     hints: false
   },
   output: {
-    path: `${__dirname}/../../build/js`,
+    path: `${__dirname}/../build/js`,
     filename: 'origoexportetuna.min.js',
     libraryTarget: 'var',
     libraryExport: 'default',
@@ -23,13 +22,6 @@ module.exports = merge(common, {
   module: {
   },
   plugins: [
-    new UglifyJSPlugin({
-      uglifyOptions: {
-        output: {
-          beautify: false
-        }
-      }
-    }),
     new webpack.optimize.AggressiveMergingPlugin()
   ]
 });
