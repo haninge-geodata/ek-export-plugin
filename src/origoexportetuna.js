@@ -56,7 +56,7 @@ const Origoexportetuna = function Origoexportetuna(options = {}) {
       const groupElement = document.getElementsByClassName('selectedurvalelement');
 
       if (groupElement && groupElement.length > 0 && !groupElement[0].classList.contains('hidden')) {
-        const selectedGroupTitle = groupElement[0].textContent.replace(/\s*\(.*?\)\s*/g, '');
+        const selectedGroupTitle = groupElement[0].textContent.slice(0, groupElement[0].textContent.lastIndexOf(' '))
 
         if (selectedGroupTitle === layerTitle) {
           if (hasOrigoExportButton) {
