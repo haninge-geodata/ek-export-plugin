@@ -13,6 +13,8 @@ const Origoexportetuna = function Origoexportetuna(options = {}) {
 
   const layerName = Object.prototype.hasOwnProperty.call(options, 'layer') ? options.layer : null;
   const hostname = Object.prototype.hasOwnProperty.call(options, 'hostname') ? options.hostname : null;
+  const customEndpoint = Object.prototype.hasOwnProperty.call(options, 'customEndpoint') ? options.customEndpoint : '/search/estateExcelReport.aspx';
+  const customParameters = Object.prototype.hasOwnProperty.call(options, 'customParameters') ? options.customParameters : null;
   const attribute = Object.prototype.hasOwnProperty.call(options, 'attribute') ? options.attribute : null;
   const buttonText = Object.prototype.hasOwnProperty.call(options, 'buttonText') ? options.buttonText : null;
   const modalTitle = Object.prototype.hasOwnProperty.call(options, 'modalTitle') ? options.modalTitle : 'Varning';
@@ -24,7 +26,7 @@ const Origoexportetuna = function Origoexportetuna(options = {}) {
     items.forEach((item) => {
       idString += `${item.getFeature().get(attribute)};`;
     });
-    return `${hostname}/search/estateExcelReport.aspx?searchstring=&estateLayer=${layerName}&ids=${idString}&functionParam=excel`;
+    return `${hostname}${customEndpoint}?${customParameters ? `${customParameters}${idString}` : `searchstring=&estateLayer=${layerName}&functionParam=excel&ids=${idString}`}`;
   }
 
   function modalLogic() {
