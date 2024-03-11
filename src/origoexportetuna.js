@@ -41,6 +41,7 @@ const Origoexportetuna = function Origoexportetuna(options = {}) {
       document.getElementById(acceptTermsButton.getId()).addEventListener('click', () => {
         acceptedTerms = true;
         modal.closeModal();
+        modalLogic();
       });
     }
   }
@@ -56,7 +57,7 @@ const Origoexportetuna = function Origoexportetuna(options = {}) {
       const groupElement = document.getElementsByClassName('selectedurvalelement');
 
       if (groupElement && groupElement.length > 0 && !groupElement[0].classList.contains('hidden')) {
-        const selectedGroupTitle = groupElement[0].textContent.slice(0, groupElement[0].textContent.lastIndexOf(' '))
+        const selectedGroupTitle = groupElement[0].textContent.slice(0, groupElement[0].textContent.lastIndexOf(' '));
 
         if (selectedGroupTitle === layerTitle) {
           if (hasOrigoExportButton) {
@@ -100,7 +101,7 @@ const Origoexportetuna = function Origoexportetuna(options = {}) {
     },
     onAdd(evt) {
       viewer = evt.target;
-      const layerExists = viewer.getLayers().filter(layer => layer.get('name') === layerName).length > 0;
+      const layerExists = viewer.getLayers().filter((layer) => layer.get('name') === layerName).length > 0;
 
       if (layerExists && layerName && hostname && attribute && buttonText) {
         selectionManager = viewer.getSelectionManager();
